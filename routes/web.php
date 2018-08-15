@@ -17,7 +17,7 @@ Route::resource('proyectos','ProyectoController');
 
 Route::resource('usuarios','UserController');
 
-Route::post('login','ApiAuthController@userAuth');
+Route::post('login','ApiAuthController@login');//->middleware('jwt.auth');
 
 
 

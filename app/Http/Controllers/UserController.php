@@ -59,7 +59,7 @@ class UserController extends Controller
         $user->email=$request->email;
         $user->username=$request->username;
         $user->estado='activo';
-        $user->password=Hash::make($user->password);
+        $user->password=Hash::make($request->password);
         $user->save();
 
         return response()->json([
