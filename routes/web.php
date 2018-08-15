@@ -15,7 +15,10 @@ Route::group(['middleware' => 'cors'], function ()
 
 Route::resource('proyectos','ProyectoController');
 
-Route::get('proyectos2/{nombre}','ProyectoController@buscar');
+Route::resource('usuarios','UserController');
+
+Route::post('login','ApiAuthController@userAuth');
+
 
 
 

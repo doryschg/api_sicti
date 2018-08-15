@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Proyecto;
+use App\Models\Proyecto_jefe;
+use App\User;
 
 class ProyectoController extends Controller
 {
@@ -14,13 +16,13 @@ class ProyectoController extends Controller
      */
     public function index()
     {
-        $proyecto=Proyecto::all();
+        $proyecto=Proyecto::select('proy.id_proy','titulo_proy','porc_ejec','fecha_inicio','fecha_fin','usuario.id','nombres','ap_pat','ap_mat')->join('proy_jefe','proy_jefe.id_proy','=','proy.id_proy')->join('usuario','usuario.id','=','proy_jefe.id_usuario')->get();
         
         return response()->json([
                 "msg" => "exito",
           "proyecto" => $proyecto
             ], 200
-        );  
+        ); 
     }
 
     /**
@@ -41,18 +43,21 @@ class ProyectoController extends Controller
      */
     public function store(Request $request)
     {
+
         $proyecto=new Proyecto();
-        $proyecto->alcance=$request->alcance;
-
-
         $input = $request->all();
-        $proyecto->create($input);
+        $proyectos=$proyecto->create($input);
 
-        $proyecto->save();
+        $proyecto_jefe=new Proyecto_jefe();
+        $proyecto_jefe->id_proy=$proyectos->id_proy;
+        $proyecto_jefe->id_usuario=$request->id_usuario;
+        $proyecto_jefe->save();
 
+       // $proyecto_jefe= new Proyecto_jefe();
+        
           return response()->json([
                 "msg" => "exito",
-          "proyecto" => $proyecto
+          "proyecto" => $proyectos,"proyecto_jefe"=>$proyecto_jefe
             ], 200
         );
         
@@ -64,9 +69,23 @@ class ProyectoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id_proy)
     {
-        //
+        $proyecto=Proyecto::find($id_proy);
+        if (!$proyecto) {
+            return response()->json(['errors'=>array(['code'=>404,'message'=>'No se encuentra un registro con ese código.'])],404);
+        }
+
+
+        $proyecto_jefe=Proyecto_jefe::where('id_proy',$id_proy)->first();
+        $usuario=User::find($proyecto_jefe->id_usuario);
+
+        return response()->json([
+                "msg" => "exito",
+          "proyecto" => $proyecto,"proyecto_jefe"=>$proyecto_jefe,"usuario"=>$usuario
+            ], 200
+        );
+
     }
 
     /**
@@ -87,9 +106,24 @@ class ProyectoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id_proy)
     {
-        //
+         
+         $proyecto=Proyecto::find($id_proy);
+        if (!$proyecto) {
+            return response()->json(['errors'=>array(['code'=>404,'message'=>'No se encuentra un registro con ese código.'])],404);
+        }
+
+        $input = $request->all();
+        $proyecto->update($input);
+
+        //$proyecto->save();
+
+          return response()->json([
+                "msg" => "exito",
+          "proyecto" => $proyecto
+            ], 200
+        );
     }
 
     /**
@@ -98,14 +132,28 @@ class ProyectoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id_proy)
     {
-        //
+         $proyecto=Proyecto::find($id_proy);
+        if (!$proyecto) {
+            return response()->json(['errors'=>array(['code'=>404,'message'=>'No se encuentra un registro con ese código.'])],404);
+        }
+
+        $proyecto_jefe=Proyecto_jefe::where('id_proy',$id_proy)->first();
+
+        $proyecto_jefe->delete();
+
+        $proyecto->delete();
+        
+
+            return response()->json([
+
+            "mensaje" => "registro eliminado correctamente"
+            ], 200
+        );
+
     }
 
- public function buscar($nombre)
-    {
-        //
-    }
+ 
 
 }
