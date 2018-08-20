@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use \App\User;
-use Hash;
+use App\Models\Instituto;
 
-
-class UserController extends Controller
+class InstitutoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,13 +14,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user=User::all();
+        $institutos=Instituto::all();
 
-        return response()->json([
+         return response()->json([
                 "msg" => "exito",
-          "usuario"=>$user
+          "instituto" => $institutos
             ], 200
-        );
+        ); 
     }
 
     /**
@@ -43,36 +41,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $user= new User();
-
-       /* $input = $request->all();
-        $usuario=$user->create($input);*/
-
-        $user->nombres=$request->nombres;
-        $user->ap_pat=$request->ap_pat;
-        $user->ap_mat=$request->ap_mat;
-        $user->ci=$request->ci;
-        $user->ext=$request->ext;
-        $user->fecha_nac=$request->fecha_nac;
-        $user->sexo=$request->sexo;
-        $user->celular=$request->celular;
-        $user->email=$request->email;
-        $user->username=$request->username;
-        $user->estado='activo';
-        $user->password=Hash::make($request->password);
-        $user->save();
-
-        return response()->json([
-                "msg" => "exito",
-          "usuario" => $user
-            ], 200
-        );
-
-
-
-
-
-        
+        //
     }
 
     /**
@@ -83,17 +52,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user=User::find($id);
-
-        if (!$user) {
-            return response()->json(['errors'=>array(['code'=>404,'message'=>'No se encuentra un registro con ese código.'])],404);
-        }
-
-        return response()->json([
-                "msg" => "exito",
-          "usuario" => $user
-            ], 200
-        );
+        //
     }
 
     /**
